@@ -7,9 +7,9 @@ hard dependencies:
 steps to run:
     unzip file to working directory
     run:
-        `cd your_directory`
-        `mysql -u username -p < init.sql`
-        `npm install`
+        `cd your_directory`__
+        `mysql -u username -p < init.sql`__
+        `npm install`__
         `node server.js`
 
     api test calls:
