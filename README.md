@@ -6,7 +6,7 @@ hard dependencies:
 
 steps to run:
     unzip file to working directory
-    run:
+    run:<br/>
         `cd your_directory`<br/>
         `mysql -u username -p < init.sql`<br/>
         `npm install`<br/>
