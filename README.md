@@ -16,4 +16,4 @@ steps to run:
         GET: 
             `curl http://<YOUR_IP>:3333/services/comments`
         POST:
-            `curl --data "text=I love programming wooo&ip=127.0.0.1" http://192.168.159.128:3333/services/comments`
+            `curl --data "text=I love programming wooo&ip=127.0.0.1" http://<YOUR_IP>:3333/services/comments`
