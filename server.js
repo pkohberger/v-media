@@ -20,7 +20,7 @@ http.createServer(function(request,response) {
 
     //parse request path
     var parts = url.parse(request.url,true);
-    var serviceName = __dirname + parts.pathname.toString().trim().replace('/(^///|///$)/','') + '.js';
+    var serviceName =  __dirname + '/' + parts.pathname.toString().trim().replace(/(^\/|\/$)/g,'') + '.js' ;
 
     //instantiate service
     try {
