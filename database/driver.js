@@ -37,6 +37,8 @@ module.exports = {
             //does cache exist
             //caching layer need adjustments elected to submit
             //you will see at least conceptually I understand the cacheing layer
+            //this if false was deliberate because the caching is not functioning
+            //i left code there to see that conceptually I have the idea
             if (false) {
 
                 let resultJSON = JSON.parse(result);
