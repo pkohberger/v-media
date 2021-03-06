@@ -1,7 +1,7 @@
 {
   "name": "vicemedia",
   "version": "1.0.0",
-  "description": "",
+  "description": "hard dependencies:        must have mysql, npm, node.js, and redis server installed     make sure redis server and mysql are running",
   "main": "server.js",
   "dependencies": {
     "flatten": "^1.0.3",
@@ -12,7 +12,8 @@
     "mysql2-promise": "^0.1.4",
     "redis": "^3.0.2",
     "unflatten": "^1.0.4",
-    "url": "^0.11.0"
+    "url": "^0.11.0",
+    "util": "^0.12.3"
   },
   "devDependencies": {},
   "scripts": {
