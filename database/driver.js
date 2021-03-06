@@ -1,4 +1,4 @@
-const mysql = require('mysql'); 
+const mysql = require('mysql2-promise')(); 
 const redis = require('redis');
 const stringify = require('json-stringify-safe');
 
@@ -11,63 +11,79 @@ module.exports = {
     connect: function () {
 
         //set connection property
-        this.connection = mysql.createConnection({
+        mysql.configure({
             host: 'localhost',
             user: 'vagrant',
             password: 'vagrant',
             database: 'vice_media'
         });
 
-        return this.connection.connect(function(error) {
-            if(error) {
-                return console.error('error: ' + error.message);
-            }
-        });
+        this.connection = mysql;
+
+        return this.connection; 
+
+        // return this.connection.connect(function(error) {
+        //     if(error) {
+        //         return console.error('error: ' + error.message);
+        //     }
+        // });
     },
 
     //read from the database
-    read: function (query,fn) {
+    read: async function (query) {
 
-        var client = redis.createClient();
-        var key = query.replace(/[^A-Za-z0-9]+/g,'').toLowerCase();
+        //make sure we are connected
+        if(this.connection === null) {
+            this.connect();
+        }
+
+        //var client = redis.createClient();
+        //var key = query.replace(/[^A-Za-z0-9]+/g,'').toLowerCase();
         var dbHandle = this;
 
-        return client.get(key, function(err, result) {
+        try {
+            var queryResult = await this.connection.execute(query);
+            return queryResult;
+        } catch(error) {
+            console.log("READ: " + error.message);
+        }
 
-            //does cache exist
-            //caching layer need adjustments elected to submit
-            //you will see at least conceptually I understand the cacheing layer
-            //this if false was deliberate because the caching is not functioning
-            //i left code there to see that conceptually I have the idea
-            if (false) {
+        // return client.get(key, function(err, result) {
 
-                let resultJSON = JSON.parse(result);
+        //     //does cache exist
+        //     //caching layer need adjustments elected to submit
+        //     //you will see at least conceptually I understand the cacheing layer
+        //     //this if false was deliberate because the caching is not functioning
+        //     //i left code there to see that conceptually I have the idea
+        //     if (false) {
 
-                //return object
-                return resultJSON;
-            } else {
-                //make sure we are connected
-                if(dbHandle.connection === null) {
-                    dbHandle.connect();
-                }
+        //         let resultJSON = JSON.parse(result);
 
-                //process query
-                var queryResult = dbHandle.connection.query(query,fn);
+        //         //return object
+        //         return resultJSON;
+        //     } else {
+        //         //make sure we are connected
+        //         if(dbHandle.connection === null) {
+        //             dbHandle.connect();
+        //         }
 
-                //save query result in cache
-                //@TODO: fix circular object error:
-                //TypeError: Converting circular structure to JSON
-                //tried workaround https://www.npmjs.com/package/json-stringify-safe
-                //tried flatten and unflatten as well
-                //at this point I am realizing that I may have restructure certain portions
-                //though Iam hoping in submitting what I have
-                //you will see at least conceptually I understand the cacheing layer
-                client.setex(key, 3600, stringify(queryResult));
+        //         //process query
+        //         var queryResult = dbHandle.connection.query(query,fn);
 
-                //return query result
-                return queryResult;
-            }
-        });        
+        //         //save query result in cache
+        //         //@TODO: fix circular object error:
+        //         //TypeError: Converting circular structure to JSON
+        //         //tried workaround https://www.npmjs.com/package/json-stringify-safe
+        //         //tried flatten and unflatten as well
+        //         //at this point I am realizing that I may have restructure certain portions
+        //         //though Iam hoping in submitting what I have
+        //         //you will see at least conceptually I understand the cacheing layer
+        //         client.setex(key, 3600, stringify(queryResult));
+
+        //         //return query result
+        //         return queryResult;
+        //     }
+        //});        
     },
 
     //write to the database
@@ -80,7 +96,7 @@ module.exports = {
 
         //process query
        try {
-           this.connection.query(query);
+           this.connection.execute(query);
        }catch(e) {
            return false;
        }

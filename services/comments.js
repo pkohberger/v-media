@@ -5,19 +5,16 @@ module.exports = {
         //pass parameters into model for insert
         let params = request.post;
         let success = comments.create(params);
-        buffer.die(response,JSON.stringify({success:success}));
+        return buffer.die(response,JSON.stringify({success:success}));
     },
-    get: function (request,response,buffer) {
+    get: async function (request,response,buffer) {
         //pass callback to database for processing
-        return comments.list(function(error,rows) {
-            let json = [];
-            for(let row of rows) {
-                json.push({
-                    ip: row['ip'],
-                    text: row['text']
-                });
-            }
-            buffer.die(response,JSON.stringify(json));
-        });
+        let params = request.post;
+        try {
+            let json = await comments.list(params);
+            return buffer.die(response,JSON.stringify(json));
+        } catch(error) {
+            console.log("GET: " + error.message);
+        }
     }
 };

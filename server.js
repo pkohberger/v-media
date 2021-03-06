@@ -18,6 +18,9 @@ const buffer = {
 
 http.createServer(function(request,response) {
 
+    //output request info
+    console.log('Request: ' + request.method.toString() + ': ' + request.url.toString().trim());
+
     //parse request path
     var parts = url.parse(request.url,true);
     var serviceName =  __dirname + '/' + parts.pathname.toString().trim().replace(/(^\/|\/$)/g,'') + '.js' ;
@@ -25,7 +28,9 @@ http.createServer(function(request,response) {
     //instantiate service
     try {
         var service = require(serviceName);
-    } catch(error) {}
+    } catch(error) {
+        console.log(error.message);
+    }
 
     //bail if not exists
     if(typeof service === 'undefined') {
@@ -58,4 +63,6 @@ http.createServer(function(request,response) {
         output = service[request.method.toString().toLowerCase()](request,response,buffer);
     }
 
-}).listen(3333);
+}).listen(3333,function(){
+    console.log('Server running on port 3333');
+});
