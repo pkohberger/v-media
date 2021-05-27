@@ -1,20 +1,7 @@
 const http = require('http');
 const url = require('url');
 const queryString = require('querystring');
-
-//helper
-const buffer = {
-    notFound: function(response) {
-        response.writeHead(404, {"Content-Type": "text/plain"});
-        response.write("404 Not found");
-        response.end();
-    },
-    die: function(response,msg) {
-        response.writeHead(200, {'Content-Type': 'text/plain'});
-        response.write(msg);
-        response.end();
-    }
-};
+const buffer = require('./utils/helper');
 
 http.createServer(function(request,response) {
 
@@ -51,16 +38,23 @@ http.createServer(function(request,response) {
             }
         });
         request.on('end', function() {
+            //set post property
             request.post = queryString.parse(body);
             //call service function name based on request method
-            output = service[request.method.toString().toLowerCase()](request,response,buffer);
+            output = buffer.processRequest(request,service);
+            buffer.die(response,output);
         });
+        return;
     } 
     
     //process GET
     if (request.method == 'GET') {
+        //set get property
+        request.get = queryString.parse(request.url,true);
         //call service function name based on request method
-        output = service[request.method.toString().toLowerCase()](request,response,buffer);
+        output = buffer.processRequest(request,service);
+        buffer.die(response,output);
+        return;
     }
 
 }).listen(3333,function(){
